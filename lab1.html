@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Input Form</title>
+    <style>
+        body {
+       		 background-image: url('https://png.pngtree.com/background/20220727/original/pngtree-vector-background-in-the-concept-of-technology-picture-image_1838583.jpg');
+
+            font-family: Arial, sans-serif;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: 500px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .form-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-container input[type="text"],
+        .form-container input[type="email"],
+        .form-container input[type="password"],
+        .form-container select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .toggle-password {
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 5px;
+        }
+        .form-container input[type="file"] {
+            margin-bottom: 10px;
+        }
+        .image-preview {
+            display: block;
+            width: 100px;
+            height: 100px;
+            margin: 10px auto;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+        .validation-message {
+            color: red;
+            font-size: 0.9em;
+        }
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .form-buttons button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .primary-button {
+            background-color: #007bff;
+            color: white;
+        }
+        .secondary-button {
+            background-color: #ccc;
+        }
+        .disabled {
+            background-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+       
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <form id="userForm" onsubmit="return handleSubmit(event);">
+        
+        <!-- Username input -->
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" maxlength="255" placeholder="Enter your username" required>
+        <div class="validation-message" id="usernameValidation"></div>
+
+        <!-- Password input -->
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" maxlength="255" required>
+        <span class="toggle-password" onclick="togglePasswordVisibility()">Show</span>
+        <div class="validation-message" id="passwordValidation"></div>
+
+        <!-- Email input -->
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" maxlength="255" placeholder="Enter your email" required>
+        <div class="validation-message" id="emailValidation"></div>
+
+        <!-- Role dropdown -->
+        <label for="role">Role</label>
+        <select id="role" name="role" required>
+            <option value="" disabled selected>Select your role</option>
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+            <option value="editor">Editor</option>
+            <!-- Other roles can be dynamically populated from the system -->
+        </select>
+
+        <!-- Profile Picture -->
+        <label for="profilePictureUrl">Profile Picture (URL)</label>
+        <input type="text" id="profilePictureUrl" name="profilePictureUrl" placeholder="Enter image URL">
+        
+        <label for="profilePictureFile">or Upload Picture</label>
+        <input type="file" id="profilePictureFile" name="profilePictureFile" accept="image/*" onchange="previewImage(event)">
+        
+        <!-- Image Preview -->
+        <img id="imagePreview" class="image-preview" src="#" alt="Image Preview" style="display:none;">
+
+        <!-- Read-only fields -->
+        <label for="createdAt">Account Created At</label>
+        <input type="text" id="createdAt" name="createdAt" value="2024-09-28 10:00:00" readonly>
+
+        <label for="updatedAt">Last Updated At</label>
+        <input type="text" id="updatedAt" name="updatedAt" value="2024-09-28 10:00:00" readonly>
+
+        <div class="form-buttons">
+            <button type="submit" id="submitButton" class="primary-button disabled" disabled>Create Account</button>
+            <button type="button" class="secondary-button" onclick="cancelForm()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Toggle password visibility
+    function togglePasswordVisibility() {
+        const passwordField = document.getElementById('password');
+        const toggleText = document.querySelector('.toggle-password');
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleText.textContent = 'Hide';
+        } else {
+            passwordField.type = 'password';
+            toggleText.textContent = 'Show';
+        }
+    }
+
+    // Preview the profile picture from URL or file upload
+    document.getElementById('profilePictureUrl').addEventListener('input', function() {
+        const imageUrl = this.value;
+        if (imageUrl) {
+            document.getElementById('imagePreview').style.display = 'block';
+            document.getElementById('imagePreview').src = imageUrl;
+        } else {
+            document.getElementById('imagePreview').style.display = 'none';
+        }
+    });
+
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const imagePreview = document.getElementById('imagePreview');
+            imagePreview.src = reader.result;
+            imagePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    // Enable/disable submit button based on form validation
+    document.querySelectorAll('input[required], select[required]').forEach(input => {
+        input.addEventListener('input', validateForm);
+        input.addEventListener('change', validateForm);
+    });
+
+    function validateForm() {
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const role = document.getElementById('role').value;
+
+        // Clear previous validation messages
+        document.getElementById('usernameValidation').textContent = '';
+        document.getElementById('emailValidation').textContent = '';
+        document.getElementById('passwordValidation').textContent = '';
+
+        // Validate Username
+        if (username.length < 3) {
+            document.getElementById('usernameValidation').textContent = 'Username must be at least 3 characters.';
+        }
+
+        // Validate Email
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            document.getElementById('emailValidation').textContent = 'Invalid email format.';
+        }
+
+        // Validate Password
+        if (password.length < 6) {
+            document.getElementById('passwordValidation').textContent = 'Password must be at least 6 characters.';
+        }
+
+        // Enable/disable submit button
+        const submitButton = document.getElementById('submitButton');
+        submitButton.disabled = !username || !email || !password || !role ||
+            !!document.getElementById('usernameValidation').textContent ||
+            !!document.getElementById('emailValidation').textContent ||
+            !!document.getElementById('passwordValidation').textContent;
+        submitButton.classList.toggle('disabled', submitButton.disabled);
+    }
+
+    // Handle form submission
+    function handleSubmit(event) {
+        event.preventDefault();
+        // Implement your form submission logic here
+        alert("Form submitted successfully!");
+    }
+
+    // Cancel form function
+    function cancelForm() {
+        // Redirect to the previous page or clear the form
+        window.history.back();
+    }
+</script>
+
+</body>
+</html>
