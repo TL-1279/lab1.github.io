@@ -111,12 +111,19 @@
 </div>
 
 <script>
-    // Hiển thị form tương ứng
+     // Hiển thị form tương ứng
     function showForm(formId) {
         document.querySelectorAll('.form-container form').forEach(form => {
             form.classList.remove('active');
         });
         document.getElementById(formId).classList.add('active');
+    }
+
+    // Xử lý đăng nhập
+    function handleLogin(event) {
+        event.preventDefault(); // Ngăn chặn reload trang
+        // Chuyển hướng đến trang web chỉ định
+        window.location.href = 'https://tl-1279.github.io/group/'; // Đặt URL trang bạn muốn chuyển đến
     }
 
     // Xử lý đăng nhập, đăng ký, và quên mật khẩu
@@ -161,6 +168,7 @@
             }
         }
     }
+    
 </script>
 
 </body>
